@@ -11,13 +11,19 @@ on:
 
 jobs:
   push_to_registry:
-    # strategy:
-    #   matrix:
-    #     os: [ ubuntu-latest, macos-latest ]
-    #     include:
-    #       - platforms: 
-    #         os: ubuntu-latest
-    #       - platforms
+    strategy:
+
+      # We need to do a separate run for making each container
+      # because the GH runners run out of memory very quickly
+      matrix:
+        platform: [ linux/amd64, linux/arm64, linux/i386 ]
+        include:
+          - platform: linux/amd64
+            os: ubuntu-latest
+          - platform: linux/i386
+            os: ubuntu-latest
+          - platform: linux/arm64
+            os: macos-latest
 
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
@@ -55,7 +61,7 @@ jobs:
           push: true
           tags: ashtontm/test:latest,ashtontm/test:1.0.0
           # platforms: linux/amd64,linux/arm64
-          platforms: linux/amd64
+          platforms: ${{ matrix.platform }}
 
           # tags: ${{ steps.meta.outputs.tags }}
           # labels: ${{ steps.meta.outputs.labels }}
