@@ -42,7 +42,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./devenv/electrs
+          context: "{{defaultContext}}:/devenv/electrs/docker"
           file: ./Dockerfile
           push: true
           tags: ashtontm/test:latest,ashtontm/test:1.0.0
