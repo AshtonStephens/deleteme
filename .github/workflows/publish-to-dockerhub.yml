@@ -16,33 +16,19 @@ jobs:
       # We need to do a separate run for making each container
       # because the GH runners run out of memory very quickly
       matrix:
-        platform: [arm64, i386 ] # linux/amd64, 
+        platform: [ arm64, amd64 ]
         include:
-          # - platform: linux/amd64
-          #   os: ubuntu-latest
-          - platform: i386
+          - platform: amd64
             os: ubuntu-latest
           - platform: arm64
-            os: macos-latest
+            # Making for the ARM platform requires more RAM
+            os: ubuntu-latest-16-cores
 
     name: Push Docker image to Docker Hub
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
-      
-      # Taken from GitHub issue response:
-      # https://github.com/actions/runner-images/issues/17#issuecomment-1537238473
-      - name: Setup docker (missing on MacOS)
-        if: runner.os == 'macos'
-        run: |
-          brew install docker
-          colima start
-          
-          # For testcontainers to find the Colima socket
-          # https://github.com/abiosoft/colima/blob/main/docs/FAQ.md#cannot-connect-to-the-docker-daemon-at-unixvarrundockersock-is-the-docker-daemon-running
-          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
-
 
       # uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d
       - name: Log in to Docker Hub
